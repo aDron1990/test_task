@@ -10,13 +10,7 @@ FileLogger::FileLogger(const std::string& fileName) : Logger{}, fileName_{fileNa
 
 void FileLogger::log(const std::string& logMessage)
 {
-    mutex_.lock();
-    std::cout << "mutex locked\n";
-
+    std::unique_lock<std::mutex> guard{mutex_};
     std::ofstream file(fileName_, std::ios::app | std::ios::out);
     file << logMessage << '\n';
-    file.close();
-    
-    mutex_.unlock();
-    std::cout << "mutex unlocked\n";
 }

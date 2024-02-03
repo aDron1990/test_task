@@ -50,7 +50,7 @@ void Server::run()
         }
         else
         {
-            std::cout << "connected to client\n"; 
+            std::cout << "Client connected\n"; 
         }
 
         std::future<void> f;
@@ -64,7 +64,7 @@ void Server::run()
                 memset(buffer, '\0', sizeof(buffer));
                 if (read(clientSocket, buffer, sizeof(buffer)) <= 0)
                 {
-                    std::cout << "Client close socket" << std::endl;
+                    std::cout << "Client disconected" << std::endl;
                     break;
                 }
                 logger->log(buffer);
