@@ -8,6 +8,9 @@
 #include <string>
 #include <cstring>
 #include <future>
+#include <thread>
+#include <list>
+#include <algorithm>
 
 #include <iostream> //////////////////////////////////
 
@@ -27,16 +30,47 @@ Server::Server(const uint32_t port)
 
 void Server::run()
 {
+    std::list<std::future<void>> flist;
+    std::thread clientDeleter{[&flist]()
+    {
+        while(1)
+        flist.remove_if([](std::future<void>& f)
+        {
+            return (bool)(f.wait_for(std::chrono::seconds(0)) == std::future_status::ready);
+        });
+    }};
+
     while(1)
     {
         int clientSocket = accept(serverSocket, NULL, NULL);
-        if (clientSocket < 0) continue;
+        if (clientSocket < 0)
+        {
+            std::cout << "Error to connct to client\n";
+            continue;
+        }
+        else
+        {
+            std::cout << "connected to client\n"; 
+        }
 
-        char buffer[64];
-        memset(buffer, '\0', sizeof(buffer));
+        std::future<void> f;
 
-        read(clientSocket, buffer, sizeof(buffer));
-        logger->log(buffer);
-        close(clientSocket);
+        flist.emplace_front(std::move(std::async(std::launch::async, 
+        [&, clientSocket]()
+        {
+            while (1)
+            {
+                char buffer[64];
+                memset(buffer, '\0', sizeof(buffer));
+                if (read(clientSocket, buffer, sizeof(buffer)) <= 0)
+                {
+                    std::cout << "Client close socket" << std::endl;
+                    break;
+                }
+                logger->log(buffer);
+            }
+            close(clientSocket);
+        })));
     } 
+    clientDeleter.join();
 }

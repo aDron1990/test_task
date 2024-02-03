@@ -50,6 +50,13 @@
         "iostream": "cpp",
         "iomanip": "cpp",
         "sstream": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "charconv": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

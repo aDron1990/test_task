@@ -9,8 +9,8 @@ class FileLogger: public Logger
 {
 protected:
 
-    std::ofstream file_;
     std::mutex mutex_;
+    std::string fileName_;
 
 public:
 

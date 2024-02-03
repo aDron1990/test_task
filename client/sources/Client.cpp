@@ -1,6 +1,7 @@
 #include "Client.hpp"
 
 #include <iostream>
+#include <chrono>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -19,10 +20,22 @@ Client::Client(const std::string& name, const uint32_t port)
 
 void Client::run(const uint32_t timeoutInSeconds)
 {
+    using namespace std::chrono;
+    auto lastTime = system_clock::now();
     if (connect(mySocket_, (struct sockaddr*)&serverAddress_, sizeof(serverAddress_)) == -1)
     {
-        std::cerr << "Failed to connect" << std::endl;
+        std::cerr << "Failed to connect to server" << std::endl;
+        return;
     }
-    write(mySocket_, name_.c_str(), name_.size());
+    while (1)
+    {
+        auto now = system_clock::now();
+        if (duration_cast<seconds>(now - lastTime).count() > timeoutInSeconds)
+        {
+            lastTime = now;
+            std::cout << "Send: " << name_ << std::endl;
+            write(mySocket_, name_.c_str(), name_.size());
+        }
+    }
     close(mySocket_);
 }
