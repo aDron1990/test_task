@@ -7,6 +7,7 @@
 #include <sys/types.h> 
 #include <string>
 #include <cstring>
+#include <future>
 
 #include <iostream> //////////////////////////////////
 

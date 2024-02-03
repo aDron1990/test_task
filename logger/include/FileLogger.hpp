@@ -3,12 +3,14 @@
 #include "Logger.hpp"
 
 #include <fstream>
+#include <mutex>
 
 class FileLogger: public Logger
 {
 protected:
 
-    std::ofstream file;
+    std::ofstream file_;
+    std::mutex mutex_;
 
 public:
 
